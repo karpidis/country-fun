@@ -1,7 +1,10 @@
-# This is a sample Python script.
+import country_list
+import random
+import country_class
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+country_list = country_list.un_members
+random.shuffle(country_list)
+current_country = country_list.pop()
 
 
 def print_hi(name):
