@@ -1,6 +1,10 @@
 # create a class of Player to save number of games and score
 from elo_calculator import difr
 import datetime
+import os
+import json
+
+
 class Player:
     """I create a player that will have a rating, name and number of games"""
 
@@ -52,3 +56,60 @@ class Player:
         Updates the player's last_played attribute to the current date.
         """
         self.last_played = datetime.date.today()
+
+    def player_to_file(self):
+        """Save the player's attributes to a JSON file."""
+        filename = f"{self.name}.json"
+        filepath = os.path.join('players', filename)
+        # check if the file already exists
+        if os.path.exists(filepath):
+            # prompt the user to overwrite the file or choose a new name
+            while True:
+                choice = input(f"A player with the name {self.name} already exists. "
+                               f"Do you want to overwrite the file (O) or choose a new name (N)? ")
+                if choice.lower() == 'o':
+                    break
+                elif choice.lower() == 'n':
+                    self.name = input("Please enter a new name for the player: ")
+                    filename = f"{self.name}.json"
+                    filepath = os.path.join('players', filename)
+                    if not os.path.exists(filepath):
+                        break
+                else:
+                    print("Invalid choice. Please enter 'O' or 'N'.")
+
+        # save the player's attributes to the file
+        data = {'name': self.name, 'elo': self.elo, 'games': self.games,
+                'k_factor': self.k_factor, 'last_played': str(self.last_played)}
+        with open(filepath, 'w') as f:
+            json.dump(data, f)
+            print(f"Player {self.name} saved to file {filename}.")
+
+    def player_from_file(self, name):
+        """
+        Loads a player's attributes from a JSON file.
+
+        Args:
+            name (str): The name of the player to load.
+
+        Returns:
+            None
+        """
+        filename = f"{name}.json"
+        filepath = os.path.join('players', filename)
+
+        if not os.path.exists(filepath):
+            print(f"No player with the name {name} exists.")
+            return
+
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+
+        self.name = data['name']
+        self.elo = data['elo']
+        self.games = data['games']
+        self.k_factor = data['k_factor']
+        self.last_played = datetime.datetime.strptime(data['last_played'], '%Y-%m-%d').date()
+
+        print(f"Player {name} loaded from file {filename}.")
+

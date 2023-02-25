@@ -1,6 +1,6 @@
 import country_list
 import random
-import country_class
+import country
 
 country_list = country_list.un_members
 random.shuffle(country_list)
