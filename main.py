@@ -40,55 +40,76 @@ def main():
     print(starting_country.name+" with population of "+str(starting_country.population) +
           " and code "+starting_country.code)
     sorted_list = [starting_country]
-
+    wrong_guesses = 0
     while country_list:
+        if wrong_guesses == 3:
+            print("You lost")
+            break
         sorted_countries = [country.name for country in sorted_list]
         print(sorted_countries)
         new_country = next_country(country_list)
         print(new_country.name + " with code " + new_country.code)
-        pop_question = input(f"The {new_country.name} population is bigger or smaller than:? ")
-        while not country_input(pop_question):
-            pop_question = input(f"The {new_country.name} population is bigger or smaller than:? (ex: bigger than Greece)"
-                                 f"or (ex: smaller than Gre)")
-        katataxi, chora = country_input(pop_question)
-        print(chora)
-        if chora in sorted_countries:
-            chora_pos = sorted_countries.index(chora)
-            if katataxi == "bigger":
-                if new_country.population > sorted_list[chora_pos].population:
-                    if chora_pos == len(sorted_countries) - 1:
-                        sorted_list.insert(chora_pos + 1, new_country)
-                        sorted_countries.insert(chora_pos + 1, new_country.name)
-                    else:
-                        if new_country.population < sorted_list[chora_pos + 1].population:
-                            sorted_list.insert(chora_pos +1, new_country)
-                            sorted_countries.insert(chora_pos + 1, new_country.name)
-                        else:
-                            print("Wrong answer")
-                            break
-                else:
-                    print("Wrong answer")
-                    break
-            elif katataxi == "smaller":
-                if new_country.population < sorted_list[chora_pos].population:
-                    if chora_pos == 0:
-                        sorted_list.insert(chora_pos, new_country)
-                        sorted_countries.insert(chora_pos, new_country.name)
-                    else:
-                        if new_country.population > sorted_list[chora_pos - 1].population:
-                            sorted_list.insert(chora_pos, new_country)
-                            sorted_countries.insert(chora_pos, new_country.name)
-                        else:
-                            print("Wrong answer")
-                            break
-                else:
-                    print("Wrong answer")
-                    break
-        else:
-            print(f"{chora} is not in the sorted list. Please choose another country to compare.")
-            continue
 
-        print(pop_question)
+        while wrong_guesses < 3:
+            pop_question = input(f"The {new_country.name} population is bigger or smaller than:? ")
+            if not country_input(pop_question):
+                print("Invalid input. Please try again.")
+            else:
+                katataxi, chora = country_input(pop_question)
+                katataxi = katataxi.capitalize()
+                chora = chora.capitalize()
+                if chora not in sorted_countries:
+                    print(f"{chora} is not in the sorted list. Please choose another country to compare.")
+                else:
+                    chora_pos = sorted_countries.index(chora)
+                    if katataxi == "Bigger":
+                        if new_country.population > sorted_list[chora_pos].population:
+                            if chora_pos == len(sorted_countries) - 1:
+                                sorted_list.insert(chora_pos + 1, new_country)
+                                sorted_countries.insert(chora_pos + 1, new_country.name)
+                            else:
+                                if new_country.population < sorted_list[chora_pos + 1].population:
+                                    sorted_list.insert(chora_pos + 1, new_country)
+                                    sorted_countries.insert(chora_pos + 1, new_country.name)
+                                else:
+                                    print("Wrong answer")
+                                    wrong_guesses += 1
+                                    print(f'{new_country.name} population is {new_country.population} ')
+                                    sorted_list.append(new_country)
+                                    sorted_list.sort(key=lambda country: country.population)
+                                    break
+                        else:
+                            print("Wrong answer")
+                            wrong_guesses += 1
+                            print(f'{new_country.name} population is {new_country.population} ')
+                            sorted_list.append(new_country)
+                            sorted_list.sort(key=lambda country: country.population)
+                            break
+                    elif katataxi == "Smaller":
+                        if new_country.population < sorted_list[chora_pos].population:
+                            if chora_pos == 0:
+                                sorted_list.insert(chora_pos, new_country)
+                                sorted_countries.insert(chora_pos, new_country.name)
+                            else:
+                                if new_country.population > sorted_list[chora_pos - 1].population:
+                                    sorted_list.insert(chora_pos, new_country)
+                                    sorted_countries.insert(chora_pos, new_country.name)
+                                else:
+                                    print("Wrong answer")
+                                    wrong_guesses += 1
+                                    print(f'{new_country.name} population is {new_country.population} ')
+                                    sorted_list.append(new_country)
+                                    sorted_list.sort(key=lambda country: country.population)
+                                    break
+                        else:
+                            print("Wrong answer")
+                            wrong_guesses += 1
+                            print(f'{new_country.name} population is {new_country.population} ')
+                            sorted_list.append(new_country)
+                            sorted_list.sort(key=lambda country: country.population)
+                            break
+                    print(pop_question)
+                    break
 
 
 if __name__ == '__main__':
