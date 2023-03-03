@@ -1,15 +1,21 @@
 from elo_calculator import difr
+import json
+
+
 class Country:
-    def __init__(self, name, code, continent, population, area):
+    def __init__(self, name, code, continent, population, area, elo=1500):
         self.name = name
         self.code = code
-        self.code = continent
-        self.population = population
+        self.continent = continent
+        self.population = int(population)
         self.area = area
         # self.capital = capital
         # self.phone_code = phone_code
-        self.elo = 1500 #initial elo
+        self.elo = elo  # initial elo
 
+    def __str__(self):
+        return self.name
+    
     def update_elo(self, opponent_elo, guess_result):
         """
         Updates the country's ELO score based on the result of a guess by a player.
@@ -29,3 +35,18 @@ class Country:
         elo_change = difr(self.elo, opponent_elo, actual_score, 20)
         self.elo += elo_change  # update ELO score
 
+    @classmethod
+    def from_json(cls, filename):
+        with open(filename) as f:
+            data = json.load(f)
+        name = data['name']
+        code = data['code']
+        continent = data['continent']
+        population = data['population']
+        area = data['area']
+        elo = data['elo']
+        return cls(name, code, continent, population, area, elo)
+
+    @staticmethod
+    def pop_area(area, population):
+        return area/population
