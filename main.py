@@ -6,12 +6,34 @@ from take_input import country_input
 
 
 def what_we_compare():
+    """Returns a string of what we compare
+    >>> what_we_compare()
+    You can play for:
+    1.Population
+    2.Area
+    3.People per km²
+    What is your choice?1
+    >>> what_we_compare()
+    You can play for:
+    1.Population
+    2.Area
+    3.People per km²
+    What is your choice?area
+    Invalid choice. Please try again
+    What is your choice?2
+    >>> what_we_compare()
+    You can play for:
+    1.Population
+    2.Area
+    3.People per km²
+    What is your choice?3
+    """
     choices = {"1": "Population",
                "2": "Area",
                "3": "People per km²"
                }
     print("You can play for: ")
-    for key, value in choices:
+    for key, value in choices.items():
         print(key + "." + value)
     while True:
         choice = input("What is your choice?", )
@@ -43,6 +65,8 @@ def main():
     wrong_guesses = 0
     while country_list:
         if wrong_guesses == 3:
+            sorted_countries = [country.name for country in sorted_list]
+            print(sorted_countries)
             print("You lost")
             break
         sorted_countries = [country.name for country in sorted_list]
@@ -56,8 +80,8 @@ def main():
                 print("Invalid input. Please try again.")
             else:
                 katataxi, chora = country_input(pop_question)
-                katataxi = katataxi.capitalize()
-                chora = chora.capitalize()
+                katataxi = katataxi.title()
+                chora = chora.title()
                 if chora not in sorted_countries:
                     print(f"{chora} is not in the sorted list. Please choose another country to compare.")
                 else:
