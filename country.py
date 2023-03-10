@@ -1,3 +1,4 @@
+#definition of country class and its methods
 from elo_calculator import difr
 import json
 
