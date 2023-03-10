@@ -1,6 +1,6 @@
 import re
 
-country_game_re = re.compile(r'^(bigger|smaller) than\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)$', re.IGNORECASE)
+country_game_re = re.compile(r'^(bigger|smaller) than\s+(?:"?)([\w\s-]+)(?:"?)$', re.IGNORECASE)
 
 def country_input(c_input):
     """Returns a tuple of (comparison, country) if the input is valid, otherwise returns False
