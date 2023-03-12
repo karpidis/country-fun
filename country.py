@@ -10,6 +10,9 @@ class Country:
         self.population = int(population)
         self.area = area
         self.elo = elo
+        self.density = self.pop_area()
+        # self.capital = capital
+        # self.phone_code = phone_code
 
     def __str__(self):
         return self.name
@@ -25,6 +28,6 @@ class Country:
             data = json.load(f)
         return cls(**data)
 
-    @staticmethod
-    def pop_area(area, population):
-        return area / population
+
+    def pop_area(self):
+        return self.population / self.area
