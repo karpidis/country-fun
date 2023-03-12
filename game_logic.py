@@ -102,7 +102,7 @@ def what_we_compare():
                }
     characteristic = {"1": "population",
                       "2": "area",
-                      "3": "pop_area"
+                      "3": "density"
                       }
     print("You can play for: ")
     for key, value in choices.items():

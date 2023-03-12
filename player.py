@@ -19,6 +19,7 @@ def get_number_names_of_players():
         player_name = input("Enter the name of player {}: ".format(i + 1))
         player = Player.from_file(player_name)
         players.append(player)
+        print(f"Player: {player.name}, Games: {player.games}, ELO: {player.elo}")
     return players
 
 
@@ -84,6 +85,7 @@ class Player:
             json.dump(data, f)
             print(f"Player {self.name} saved to file {filename}.")
 
+
     @classmethod
     def from_file(cls, name):
         """
@@ -99,27 +101,22 @@ class Player:
         filepath = os.path.join('players', filename)
 
         if os.path.exists(filepath):
-            while True:
-                choice = input(f"A player with the name {name} already exists. "
-                               f"Do you want to load the existing player (L) or create a new one with a different name"
-                               f" (N)? ")
-                if choice.lower() == 'l':
-                    with open(filepath, 'r') as f:
-                        data = json.load(f)
+            with open(filepath, 'r') as f:
+                data = json.load(f)
 
-                    return cls(name=data['name'], elo=data['elo'], games=data['games'],
-                               k_factor=data['k_factor'],
-                               last_played=datetime.datetime.strptime(data['last_played'], '%Y-%m-%d').date())
-                elif choice.lower() == 'n':
-                    while True:
-                        new_name = input("Please enter a new name for the player: ")
-                        new_filename = f"{new_name}.json"
-                        new_filepath = os.path.join('players', new_filename)
-                        if not os.path.exists(new_filepath):
-                            break
-                        print("A player with that name already exists.")
-                    return cls(name=new_name)
-                else:
-                    print("Invalid choice. Please enter 'L' or 'N'.")
+            return cls(name=data['name'], elo=data['elo'], games=data['games'],
+                       k_factor=data['k_factor'],
+                       last_played=datetime.datetime.strptime(data['last_played'], '%Y-%m-%d').date())
         else:
-            return cls(name=name)
+            while True:
+                choice = input(f"A player with the name {name} does not exist. "
+                               f"Do you want to create a new player with the name {name} (Y/N)? ")
+                if choice.lower() == 'y':
+                    player = cls(name=name)
+                    player.to_file()
+                    return player
+                elif choice.lower() == 'n':
+                    new_name = input("Please enter a new name for the player: ")
+                    return cls.from_file(new_name)  # call from_file recursively with new_name
+                else:
+                    print("Invalid choice. Please enter 'Y' or 'N'.")
