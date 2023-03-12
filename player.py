@@ -1,8 +1,25 @@
 # create a class of Player to save number of games and score
+# create a function to get number of players and names of players
 from elo_calculator import difr
 import datetime
 import os
 import json
+
+
+def get_number_names_of_players():
+    """Returns the number of players in the players' directory."""
+    number_of_players = None
+    while type(number_of_players) != int:
+        try:
+            number_of_players = int(input("How many players are there? "))
+        except ValueError:
+            print("Please enter a number.")
+    players: list[Player] = []
+    for i in range(number_of_players):
+        player_name = input("Enter the name of player {}: ".format(i + 1))
+        player = Player.from_file(player_name)
+        players.append(player)
+    return players
 
 
 class Player:
@@ -39,10 +56,10 @@ class Player:
 
     def update_k_factor(self):
         """
-        Updates the player's K factor based on the number of games played and the time since their last game.
+        Updates the player's K-factor based on the number of games played and the time since their last game.
 
-        If the player has played 20 or more games, their K factor is set to 20. If the player has not played for
-        more than 2 months, their K factor is set back to the default value of 40.
+        If the player has played 20 or more games, their K-factor is set to 20. If the player has not played for
+        more than 2 months, their K-factor is set back to the default value of 40.
 
         """
         today = datetime.date.today()
@@ -57,59 +74,52 @@ class Player:
         """
         self.last_played = datetime.date.today()
 
-    def player_to_file(self):
-        """Save the player's attributes to a JSON file."""
+    def to_file(self):
+        """Saves the player's attributes to a JSON file."""
         filename = f"{self.name}.json"
         filepath = os.path.join('players', filename)
-        # check if the file already exists
-        if os.path.exists(filepath):
-            # prompt the user to overwrite the file or choose a new name
-            while True:
-                choice = input(f"A player with the name {self.name} already exists. "
-                               f"Do you want to overwrite the file (O) or choose a new name (N)? ")
-                if choice.lower() == 'o':
-                    break
-                elif choice.lower() == 'n':
-                    self.name = input("Please enter a new name for the player: ")
-                    filename = f"{self.name}.json"
-                    filepath = os.path.join('players', filename)
-                    if not os.path.exists(filepath):
-                        break
-                else:
-                    print("Invalid choice. Please enter 'O' or 'N'.")
-
-        # save the player's attributes to the file
         data = {'name': self.name, 'elo': self.elo, 'games': self.games,
                 'k_factor': self.k_factor, 'last_played': str(self.last_played)}
         with open(filepath, 'w') as f:
             json.dump(data, f)
             print(f"Player {self.name} saved to file {filename}.")
 
-    def player_from_file(self, name):
+    @classmethod
+    def from_file(cls, name):
         """
-        Loads a player's attributes from a JSON file.
+        Loads a player's attributes from a JSON file or creates a new player object.
 
         Args:
-            name (str): The name of the player to load.
+            name (str): The name of the player.
 
         Returns:
-            None
+            A new Player object.
         """
         filename = f"{name}.json"
         filepath = os.path.join('players', filename)
 
-        if not os.path.exists(filepath):
-            print(f"No player with the name {name} exists.")
-            return
+        if os.path.exists(filepath):
+            while True:
+                choice = input(f"A player with the name {name} already exists. "
+                               f"Do you want to load the existing player (L) or create a new one with a different name"
+                               f" (N)? ")
+                if choice.lower() == 'l':
+                    with open(filepath, 'r') as f:
+                        data = json.load(f)
 
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-
-        self.name = data['name']
-        self.elo = data['elo']
-        self.games = data['games']
-        self.k_factor = data['k_factor']
-        self.last_played = datetime.datetime.strptime(data['last_played'], '%Y-%m-%d').date()
-
-        print(f"Player {name} loaded from file {filename}.")
-
+                    return cls(name=data['name'], elo=data['elo'], games=data['games'],
+                               k_factor=data['k_factor'],
+                               last_played=datetime.datetime.strptime(data['last_played'], '%Y-%m-%d').date())
+                elif choice.lower() == 'n':
+                    while True:
+                        new_name = input("Please enter a new name for the player: ")
+                        new_filename = f"{new_name}.json"
+                        new_filepath = os.path.join('players', new_filename)
+                        if not os.path.exists(new_filepath):
+                            break
+                        print("A player with that name already exists.")
+                    return cls(name=new_name)
+                else:
+                    print("Invalid choice. Please enter 'L' or 'N'.")
+        else:
+            return cls(name=name)
